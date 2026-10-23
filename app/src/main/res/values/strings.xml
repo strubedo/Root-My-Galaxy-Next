@@ -17,9 +17,9 @@
     <string name="install_tap_manager">Tap to install KernelSU Manager</string>
     <string name="install_tap_open_manager">Tap to open KernelSU Manager</string>
     <string name="install_tap_retry">Tap to retry</string>
-    <string name="install_tap_start">Tap to install KernelSU</string>
+    <string name="install_tap_start">Tap to install KernelSU-Next</string>
     <string name="device">Device</string>
-    <string name="kernelsu_card_title">KernelSU</string>
+    <string name="kernelsu_card_title">KernelSU-Next</string>
     <string name="kernelsu_card_description">A kernel-based root solution for Android</string>
     <string name="firmware">Firmware</string>
     <string name="system">System</string>
@@ -117,7 +117,7 @@
     <string name="residue_row_kept">Kept: a run reads this file, so the app never deletes it.</string>
     <string name="residue_row_kept_detail">The exploit reads it while it runs, and a boot that has prepared a run cannot get it back without a restart.</string>
     <string name="residue_copy">Copy list</string>
-    <string name="residue_role_daemon">KernelSU daemon</string>
+    <string name="residue_role_daemon">KernelSU-Next daemon</string>
     <string name="residue_role_helper">root helper</string>
     <string name="residue_role_helper_apk">helper app copy</string>
     <string name="residue_role_manager_apk">manager app copy</string>
@@ -182,7 +182,7 @@
     <string name="cached_payload_device">Device</string>
     <string name="cached_payload_profile">Target</string>
     <string name="cached_payload_exploit_sha">Exploit SHA-256</string>
-    <string name="cached_payload_kernelsu_sha">KernelSU SHA-256</string>
+    <string name="cached_payload_kernelsu_sha">KernelSU-Next SHA-256</string>
     <string name="cached_payload_note">Saved only after a KernelSU install that worked. Each file is checked again before it is used.</string>
     <string name="cached_payload_no_digest">Unknown</string>
     <string name="cached_payload_forget">Remove</string>
@@ -234,7 +234,7 @@
     <string name="universal_no_payload">No payload could be resolved for this phone, so nothing was done.</string>
     <string name="universal_step_daemon">Stage the daemon</string>
     <string name="universal_step_exploit">Kernel exploit</string>
-    <string name="universal_step_load">Load KernelSU</string>
+    <string name="universal_step_load">Load KernelSU-Next</string>
     <string name="universal_installed">Rooted : KernelSU is live in this boot.</string>
     <string name="action_open_manager">Open manager</string>
     <string name="universal_confirm_in_manager">Open the %1$s manager to see it live - and a soft restart from this screen is what puts KernelSU\'s modules into a Zygote.</string>
@@ -337,6 +337,9 @@
     <string name="theme_dark">Dark</string>
     <string name="material_color">Theme</string>
     <string name="material_color_description">Change the app theme</string>
+    <string name="oled_black">True black (OLED)</string>
+    <string name="oled_black_description">Flattens dark mode\'s surfaces to pure black, for OLED panels</string>
+    <string name="oled_black_needs_dark">Only changes anything in dark mode</string>
     <string name="language_system">Follow system</string>
     <string name="language_korean" translatable="false">한국어</string>
     <string name="language_english" translatable="false">English</string>
@@ -516,7 +519,7 @@
     <string name="guide_step_exploit_meaning">The exploit uses a bug in the kernel to get root, and it can take several tries.</string>
     <string name="guide_step_exploit_restart">Root lives only in memory, so a reboot clears it. Rebooting Android alone may not be enough, and the app asks for a full reboot when that is what it needs.</string>
     <string name="guide_step_ksu_meaning">The app loads KernelSU with the root it just got and checks that KernelSU answers.</string>
-    <string name="guide_step_ksu_restart">KernelSU is loaded fresh every boot, so after a reboot you run again - or let root on boot do it for you.</string>
+    <string name="guide_step_ksu_restart">KernelSU-Next is loaded fresh every boot, so after a reboot you run again - or let root on boot do it for you.</string>
     <string name="guide_kernel_version_meaning">The app reads this phone\'s kernel version and compares it with the version that has the fix.</string>
     <string name="guide_kernel_test_meaning">The app runs a test that takes about a minute, and only a kernel with the bug can refuse to stop it or reboot the phone.</string>
     <string name="guide_kernel_test_restart">A test that finds the bug can leave a process the phone cannot clear until it restarts, and can reboot the phone by itself.</string>
@@ -543,18 +546,18 @@
     <string name="step_ksu_detail_universal">Start the service and check the phone</string>
     <string name="step_exploit_title">Kernel exploit</string>
     <string name="step_exploit_detail">Get temporary root</string>
-    <string name="step_ksu_title">Load KernelSU</string>
+    <string name="step_ksu_title">Load KernelSU-Next</string>
     <string name="step_ksu_detail">Load KernelSU and check that it works</string>
     <string name="phase_checking">Checking device and firmware support</string>
     <string name="phase_ready">Ready to install</string>
     <string name="phase_downloading">Downloading verified payload files from GitHub</string>
     <string name="phase_exploiting">This may take 10 minutes or more. The phone may get hot or stop responding for a short time.</string>
     <string name="phase_loading_ksu">Loading KernelSU using the root access we got</string>
-    <string name="phase_installed">KernelSU was loaded and checked successfully</string>
+    <string name="phase_installed">KernelSU-Next was loaded and checked successfully</string>
     <string name="phase_root_only">Root obtained, but KernelSU was not loaded</string>
     <string name="phase_failed">Check the log below to see where it failed</string>
 
-    <string name="status_ksu_active">KernelSU active</string>
+    <string name="status_ksu_active">KernelSU-Next active</string>
     <string name="status_root_only">Root obtained. KernelSU is switched off in Settings, so it was not loaded.</string>
     <string name="status_not_installed">Not installed</string>
     <!-- The install card's title before anything has been read. It is the state's own message rather than the
@@ -571,7 +574,7 @@
     <string name="notification_boot_waiting_network">Waiting for network</string>
     <string name="notification_boot_offline">No network after boot; root was not re-established</string>
     <string name="status_exploit_running">Running kernel exploit</string>
-    <string name="status_ksu_loading">Loading KernelSU</string>
+    <string name="status_ksu_loading">Loading KernelSU-Next</string>
     <string name="status_install_failed">Install failed</string>
     <string name="log_profile">[+] Support profile: %1$s</string>
     <!-- Measured from the exploit's start, so it is the run's own time rather than the whole run's: a slow
@@ -640,8 +643,8 @@
     <string name="log_ksu_control_verified">[+] KernelSU connection verified (%1$s)</string>
     <string name="log_ksu_control_verified_despite">[+] KernelSU is loaded, but the payload\'s own check failed. The load counts because %1$s.</string>
     <string name="log_ksu_control_readings">[*] Control channel readings: %1$s</string>
-    <string name="error_ksu_not_ready">KernelSU finished loading but cannot be reached yet. Root is not ready.</string>
-    <string name="error_ksu_unconfirmed">KernelSU finished loading, but the app could not check it. Open KernelSU Manager to see whether it loaded.</string>
+    <string name="error_ksu_not_ready">KernelSU-Next finished loading but cannot be reached yet. Root is not ready.</string>
+    <string name="error_ksu_unconfirmed">KernelSU-Next finished loading, but the app could not check it. Open KernelSU-Next Manager to see whether it loaded.</string>
     <string name="error_helper_unavailable">The helper file is not executable</string>
     <string name="error_exploit_stalled">The exploit stopped printing %1$d seconds ago</string>
     <string name="error_exploit_timeout">The exploit ran past the %1$d-minute limit</string>
@@ -649,7 +652,7 @@
     <string name="stage_target">Finding a payload for this device</string>
     <string name="stage_download">Downloading payload files</string>
     <string name="stage_exploit">Running kernel exploit</string>
-    <string name="stage_kernel_su">Loading KernelSU</string>
+    <string name="stage_kernel_su">Loading KernelSU-Next</string>
     <string name="stage_verify">Verifying KernelSU connection</string>
     <!-- The universal root's own stages. Its second step resolves a payload and stages a service, where the
          payload flow's downloads a payload and resolves a target, so the two cannot share a sentence. -->
@@ -699,13 +702,13 @@
     <string name="error_success_marker">The exploit\'s success markers weren\'t found</string>
     <string name="error_local_adb_shell">The phone\'s ADB shell is not available: %1$s</string>
     <string name="error_ksu_stage">Preparing KernelSU failed: %1$s</string>
-    <string name="error_ksu_verify">KernelSU could not be loaded or checked (rc=%1$d): %2$s</string>
+    <string name="error_ksu_verify">KernelSU-Next could not be loaded or checked (rc=%1$d): %2$s</string>
     <string name="error_helper_timeout">The KernelSU helper did not finish within 120 seconds%1$s</string>
     <string name="error_boot_id">Couldn\'t read the phone\'s boot ID</string>
     <string name="error_receipt">Couldn\'t save the install record</string>
 
     <string name="artifact_exploit">exploit</string>
-    <string name="artifact_kernelsu">KernelSU</string>
+    <string name="artifact_kernelsu">KernelSU-Next</string>
     <!-- The service's own label, which differs between the two flavours it can come from. -->
     <string name="artifact_daemon">%1$s service</string>
     <!--
@@ -1008,7 +1011,7 @@
     <string name="recovery_soft_reboot_summary">Reboots Android through KernelSU, which is what makes mounted modules load.</string>
     <string name="recovery_reboot_unroot">Reboot and unroot</string>
     <string name="recovery_reboot_unroot_summary">Turn off Root on boot, delete /data/adb and /data/local/tmp, then restart.</string>
-    <string name="recovery_root_required">KernelSU is not loaded, so there is no root. Load KernelSU first, or run the install again.</string>
+    <string name="recovery_root_required">KernelSU-Next is not loaded, so there is no root. Load KernelSU-Next first, or run the install again.</string>
     <string name="reboot_sheet_title">Reboot the phone</string>
     <!-- The launcher's short label for the Reboot shortcut: what fits beside an icon, where the sheet's own
          title is what the long label and the sheet itself are for. -->
@@ -1034,14 +1037,14 @@
     <string name="reboot_confirm_body">The phone will Reboot into %1$s and will not return to this screen on its own.
 
 Hold Power and Volume Down together for 7 seconds to Reboot it from there.</string>
-    <string name="recovery_shell_unavailable">KernelSU is running, but this app has no root access. Give Root My Galaxy Next root permission in KernelSU, or start Shizuku, then try again.</string>
+    <string name="recovery_shell_unavailable">KernelSU-Next is running, but this app has no root access. Give Root My Galaxy Next root permission in KernelSU-Next, or start Shizuku, then try again.</string>
     <string name="recovery_shizuku_needs_root">Shizuku is running, but this action needs root, and Shizuku does not have it. Load KernelSU first, or run the install again.</string>
     <string name="recovery_scheduled">Scheduled. Android will reboot shortly.</string>
     <string name="recovery_reboot_scheduled">Scheduled. The phone will reboot without root.</string>
     <string name="recovery_wipe_complete">Scheduled. Root on boot is off. %1$d files in /data/adb and %2$d files in /data/local/tmp were removed. The phone will reboot without root.</string>
     <string name="recovery_wipe_incomplete">Scheduled. Root on boot is off. %1$d of %2$d files in /data/adb and %3$d of %4$d files in /data/local/tmp were removed. These could not be removed: %5$s.</string>
     <string name="recovery_wipe_more">and %1$d more</string>
-    <string name="recovery_needs_kernel_su">Needs KernelSU</string>
+    <string name="recovery_needs_kernel_su">Needs KernelSU-Next</string>
     <string name="framework_restart_title">Reboot result</string>
     <string name="framework_restart_came_back">Android restarted in about %1$d seconds and is running again.</string>
     <string name="framework_restart_not_restarted">Android did not restart. The old process is still running after %2$d seconds, so nothing was loaded again.</string>
@@ -1060,7 +1063,7 @@ Hold Power and Volume Down together for 7 seconds to Reboot it from there.</stri
     <string name="settings_shizuku_running">Shizuku is running</string>
     <string name="settings_shizuku_running_summary">Shizuku is running and this app already has permission to use it.</string>
     <string name="readiness">Status</string>
-    <string name="readiness_kernelsu">KernelSU</string>
+    <string name="readiness_kernelsu">KernelSU-Next</string>
     <string name="readiness_shizuku">Shizuku</string>
     <string name="readiness_manager_row">%1$s manager</string>
     <string name="readiness_installed">Installed</string>
@@ -1069,6 +1072,24 @@ Hold Power and Volume Down together for 7 seconds to Reboot it from there.</stri
     <string name="readiness_ksu_not_loaded">Not loaded</string>
     <string name="readiness_ksu_unreadable">Unknown</string>
     <string name="readiness_shizuku_not_running">Not running</string>
+    <string name="readiness_download_mode">Download Mode</string>
+    <string name="readiness_download_mode_reachable">Reachable</string>
+    <string name="readiness_download_mode_blocked">Blocked</string>
+    <string name="readiness_download_mode_unverified">Can\'t tell yet</string>
+    <string name="download_mode_pill_label">Odin</string>
+    <string name="download_mode_popup_title">Download Mode (Odin)</string>
+    <string name="download_mode_popup_body">The recovery path if anything goes wrong: Samsung\'s Download Mode, used with Odin on a PC to re-flash stock firmware. It\'s blocked when the lockscreen has a credential set, unless one of these opens it anyway.</string>
+    <string name="download_mode_door_lockscreen">No lockscreen credential set</string>
+    <string name="download_mode_door_maintenance">Maintenance Mode is active</string>
+    <string name="download_mode_door_backdownload">BackDownload module is active</string>
+    <string name="download_mode_row_lockscreen">Lockscreen</string>
+    <string name="download_mode_row_maintenance">Maintenance Mode</string>
+    <string name="download_mode_row_device">Device</string>
+    <string name="download_mode_value_secured">Secured</string>
+    <string name="download_mode_value_not_secured">Not set</string>
+    <string name="download_mode_value_active">Active</string>
+    <string name="download_mode_value_not_active">Not active</string>
+    <string name="download_mode_value_unknown">Unknown</string>
     <string name="settings_shizuku_state_running">Running</string>
     <string name="settings_shizuku_state_needs_permission">Needs permission</string>
     <string name="settings_shizuku_boot">Auto start Shizuku on boot</string>
@@ -1079,7 +1100,7 @@ Hold Power and Volume Down together for 7 seconds to Reboot it from there.</stri
     <string name="error_no_root_shell">There is no root shell yet</string>
     <string name="settings_ksu_flavor">KernelSU build</string>
     <string name="settings_ksu_flavor_from_payload">Comes from the payload for this phone.</string>
-    <string name="settings_dfr_stage">KernelSU service file</string>
+    <string name="settings_dfr_stage">KernelSU-Next service file</string>
     <string name="settings_dfr_stage_summary">The file KernelSU loads from after a restart. Every run uses it up and writes it again.</string>
     <string name="settings_dfr_stage_reading">Reading…</string>
     <string name="settings_ksu_flavor_pending">Reboot to apply · this boot loaded %1$s</string>
@@ -1100,7 +1121,7 @@ Hold Power and Volume Down together for 7 seconds to Reboot it from there.</stri
     <string name="settings_versions_summary">Installed on this phone</string>
     <string name="settings_versions_summary_mismatch">Mismatch</string>
     <string name="settings_versions_manager">Manager</string>
-    <string name="settings_versions_kernel">KernelSU</string>
+    <string name="settings_versions_kernel">KernelSU-Next</string>
     <string name="settings_versions_absent">Not installed</string>
     <string name="settings_versions_unread">Not available</string>
     <string name="settings_versions_mismatch_mark">Mismatch</string>
@@ -1132,7 +1153,7 @@ Hold Power and Volume Down together for 7 seconds to Reboot it from there.</stri
     <string name="run_flavor_conflict_dismiss">Not now</string>
     <string name="run_kernel_version_match">[*] This build\'s kernel release (%1$s) is not listed. The entry covers kernel version %2$s, which matches a regional variant of this firmware.</string>
     <string name="run_flavor_label">KernelSU flavour: %1$s</string>
-    <string name="settings_ksu_load">Install KernelSU</string>
+    <string name="settings_ksu_load">Install KernelSU-Next</string>
     <string name="settings_ksu_load_summary">Installs KernelSU after root is obtained.</string>
     <string name="settings_boot_root">Auto Root via Payload</string>
     <string name="settings_boot_root_summary">Run the install again after a reboot if root is not active.</string>
@@ -1195,7 +1216,7 @@ Hold Power and Volume Down together for 7 seconds to Reboot it from there.</stri
       person is agreeing to. The tier's words are the ones the row that was tapped used, so the screen and the
       confirmation cannot describe the same choice differently.
     -->
-    <string name="universal_confirm_kernelsu">KernelSU</string>
+    <string name="universal_confirm_kernelsu">KernelSU-Next</string>
     <string name="universal_confirm_payload">Payload</string>
     <string name="universal_confirm_body">This runs the %1$s exploit from this app alone : no helper, no temporary root and no Shizuku : then installs that KernelSU\'s manager, patches the kernel it writes through, loads its module and starts its service.</string>
     <string name="universal_choice_stages">stages %1$s</string>
@@ -1221,7 +1242,7 @@ Hold Power and Volume Down together for 7 seconds to Reboot it from there.</stri
          different thing happening, and the chip has one word for it. -->
     <string name="run_chip_daemon">Daemon</string>
     <string name="run_chip_exploit">Exploit</string>
-    <string name="run_chip_loading">KernelSU</string>
+    <string name="run_chip_loading">KernelSU-Next</string>
     <string name="run_chip_rooted">Rooted</string>
     <string name="run_chip_failed">Failed</string>
     <string name="run_chip_stopped">Stopped</string>
@@ -1242,7 +1263,7 @@ Hold Power and Volume Down together for 7 seconds to Reboot it from there.</stri
     <string name="kernel_version_mismatch_body">This phone runs kernel %1$s, but the selected payload is for %2$s. It may not work.</string>
     <string name="payload_update_title">Payload update available</string>
     <string name="payload_update_body">A newer payload is published for this phone: %1$s. The one it was rooted with is older. Reboot and unroot, then root again to run the new one.</string>
-    <string name="payload_update_versions">KernelSU %1$s on this phone, %2$s published</string>
+    <string name="payload_update_versions">KernelSU-Next %1$s on this phone, %2$s published</string>
     <string name="payload_update_action">Reboot and unroot</string>
     <string name="updater_available_title">Update available</string>
     <string name="updater_available_body">Version %1$s is available</string>

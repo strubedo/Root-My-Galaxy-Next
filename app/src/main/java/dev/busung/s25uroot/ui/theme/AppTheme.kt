@@ -3,6 +3,7 @@ package dev.busung.s25uroot.ui.theme
 import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Typography
@@ -47,10 +48,32 @@ private fun accentSeed(context: Context, accentColor: AccentColor): Color = when
     AccentColor.Orange -> Color(0xFF8B4F23)
 }
 
+/**
+ * Flattens every neutral surface role to pure black, for OLED panels where a true black pixel
+ * draws no power - the generated dark scheme's surfaces are dark grays, not black, by Material 3's
+ * own tonal design. Only the neutral roles move; primary/secondary/tertiary/error and their "on"
+ * counterparts stay as generated, so the accent colour a run's verdict or the chosen seed produces
+ * still reads the same against the flattened background.
+ */
+private fun ColorScheme.flattenToOledBlack(): ColorScheme = copy(
+    background = Color.Black,
+    onBackground = Color.White,
+    surface = Color.Black,
+    onSurface = Color.White,
+    surfaceDim = Color.Black,
+    surfaceBright = Color.Black,
+    surfaceContainerLowest = Color.Black,
+    surfaceContainerLow = Color.Black,
+    surfaceContainer = Color.Black,
+    surfaceContainerHigh = Color.Black,
+    surfaceContainerHighest = Color.Black,
+)
+
 @Composable
 fun RootMyGalaxyTheme(
     accentColor: AccentColor,
     themeMode: AppThemeMode,
+    oledBlack: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -76,7 +99,7 @@ fun RootMyGalaxyTheme(
                 onSurfaceVariant = lerp(generatedColors.surface, generatedColors.onSurface, 0.8f),
             )
         }
-    }
+    }.let { if (darkTheme && oledBlack) it.flattenToOledBlack() else it }
 
     SideEffect {
         val window = (context as Activity).window

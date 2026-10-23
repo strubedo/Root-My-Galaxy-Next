@@ -58,6 +58,7 @@ object AppPreferences {
     private const val PREFERENCES = "appearance"
     private const val ACCENT_COLOR = "accent_color"
     private const val THEME_MODE = "theme_mode"
+    private const val OLED_BLACK = "oled_black"
     private const val DISABLE_KSU_MODULES = "disable_ksu_modules"
     private const val LOAD_KERNEL_SU = "load_kernel_su"
     private const val KERNEL_SU_FLAVOR = "kernel_su_flavor"
@@ -257,6 +258,15 @@ object AppPreferences {
     fun setThemeMode(context: Context, themeMode: AppThemeMode) {
         prefs(context).edit()
             .putString(THEME_MODE, themeMode.storedValue)
+            .apply()
+    }
+
+    /** Whether dark mode should flatten every neutral surface to pure black (OLED). */
+    fun oledBlack(context: Context): Boolean = prefs(context).getBoolean(OLED_BLACK, false)
+
+    fun setOledBlack(context: Context, enabled: Boolean) {
+        prefs(context).edit()
+            .putBoolean(OLED_BLACK, enabled)
             .apply()
     }
 

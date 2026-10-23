@@ -29,6 +29,7 @@ internal data class Readiness(
     val kernelSu: KernelSuStatus,
     val shizuku: ShizukuAvailability,
     val managers: ManagerPresence,
+    val downloadMode: DownloadModeReading,
 )
 
 /**

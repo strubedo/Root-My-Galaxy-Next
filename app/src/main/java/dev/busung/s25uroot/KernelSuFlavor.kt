@@ -124,7 +124,7 @@ enum class KernelSuFlavor(
 
     companion object {
         /** What a payload entry means when it does not declare a flavour. */
-        val Default = KernelSu
+        val Default = KernelSuNext
 
         /**
          * The flavour an id names, or null when it is not one this build knows.

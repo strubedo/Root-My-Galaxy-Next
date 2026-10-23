@@ -29,6 +29,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -240,6 +241,7 @@ class MainActivity : ComponentActivity() {
     private var resumedOnce = false
     private var accentColor by mutableStateOf(AccentColor.Dynamic)
     private var themeMode by mutableStateOf(AppThemeMode.System)
+    private var oledBlack by mutableStateOf(false)
 	private var disableKsuModules by mutableStateOf(false)
     private var loadKernelSu by mutableStateOf(true)
     private var kernelsuFlavor by mutableStateOf(KernelSuFlavor.Default)
@@ -408,6 +410,7 @@ class MainActivity : ComponentActivity() {
         window.isNavigationBarContrastEnforced = false
         accentColor = AppPreferences.accentColor(this)
         themeMode = AppPreferences.themeMode(this)
+        oledBlack = AppPreferences.oledBlack(this)
 		disableKsuModules = AppPreferences.disableKsuModules(this)
         loadKernelSu = AppPreferences.loadKernelSu(this)
         kernelsuFlavor = AppPreferences.kernelsuFlavor(this)
@@ -434,11 +437,12 @@ class MainActivity : ComponentActivity() {
         maybeRequestShizukuPermission()
         batteryUnrestricted = isBatteryUnrestricted()
         setContent {
-            RootMyGalaxyTheme(accentColor = accentColor, themeMode = themeMode) {
+            RootMyGalaxyTheme(accentColor = accentColor, themeMode = themeMode, oledBlack = oledBlack) {
                 RootApp(
                     installViewModel = installViewModel,
                     accentColor = accentColor,
                     themeMode = themeMode,
+                    oledBlack = oledBlack,
 					disableKsuModules = disableKsuModules,
                     loadKernelSu = loadKernelSu,
                     kernelsuFlavor = kernelsuFlavor,
@@ -472,6 +476,10 @@ class MainActivity : ComponentActivity() {
                     onThemeModeChanged = { mode ->
                         AppPreferences.setThemeMode(this, mode)
                         themeMode = mode
+                    },
+                    onOledBlackChanged = { enabled ->
+                        AppPreferences.setOledBlack(this, enabled)
+                        oledBlack = enabled
                     },
 					onDisableKsuModulesChanged = { enabled ->
 						AppPreferences.setDisableKsuModules(this, enabled)
@@ -866,6 +874,7 @@ private fun RootApp(
     installViewModel: InstallViewModel,
     accentColor: AccentColor,
     themeMode: AppThemeMode,
+    oledBlack: Boolean,
 	disableKsuModules: Boolean,
     loadKernelSu: Boolean,
     kernelsuFlavor: KernelSuFlavor,
@@ -892,6 +901,7 @@ private fun RootApp(
     onCancelArmedRetry: () -> Unit,
     onAccentColorChanged: (AccentColor) -> Unit,
     onThemeModeChanged: (AppThemeMode) -> Unit,
+    onOledBlackChanged: (Boolean) -> Unit,
 	onDisableKsuModulesChanged: (Boolean) -> Unit,
     onLoadKernelSuChanged: (Boolean) -> Unit,
     onRerootAtBootChanged: (Boolean) -> Unit,
@@ -1612,6 +1622,7 @@ private fun RootApp(
                             device = device,
                             accentColor = accentColor,
                             themeMode = themeMode,
+                            oledBlack = oledBlack,
                             disableKsuModules = disableKsuModules,
                             loadKernelSu = loadKernelSu,
                             kernelsuFlavor = kernelsuFlavor,
@@ -1635,6 +1646,7 @@ private fun RootApp(
                             resumeTick = resumeTick,
                             onAccentColorChanged = onAccentColorChanged,
                             onThemeModeChanged = onThemeModeChanged,
+                            onOledBlackChanged = onOledBlackChanged,
                             onDisableKsuModulesChanged = onDisableKsuModulesChanged,
                             onLoadKernelSuChanged = onLoadKernelSuChanged,
                             onRerootAtBootChanged = onRerootAtBootChanged,
@@ -1904,6 +1916,19 @@ private fun OverviewPage(
                 // The package walk is the one reading that is not cheap, so the card opens saying
                 // "nothing found" and is corrected a moment later rather than holding up the screen.
                 managers = ManagerPresence(),
+                // The two free doors only - no shell, so this is as cheap as the readings beside it.
+                downloadMode = DownloadMode.readWithoutRoot(context).let { (secured, maintenance) ->
+                    DownloadModeReading(
+                        status = if (!secured || maintenance == true) {
+                            DownloadModeStatus.Reachable
+                        } else {
+                            DownloadModeStatus.Unverified
+                        },
+                        lockscreenSecured = secured,
+                        maintenanceModeActive = maintenance,
+                        backDownloadActive = null,
+                    )
+                },
             ),
         )
     }
@@ -1944,6 +1969,9 @@ private fun OverviewPage(
                 // A run can install a manager's daemon without the manager app being present, and coming
                 // back from one is when that changes - which is why the phase is a key above.
                 managers = ManagerPresence.of(KernelSuManager.installedManagers(context)),
+                // The full reading, module included - root may have just landed, which is exactly
+                // what the phase key above is for.
+                downloadMode = DownloadMode.read(context),
             )
         }
     }
@@ -2002,6 +2030,10 @@ private fun OverviewPage(
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f),
                     )
                 }
+                // The escape hatch's own status, next to the button that is the reason it matters: the
+                // same corner DirtyFrag's Odin pill sits in, read every time this row recomposes rather
+                // than buried in a card the home screen scrolls past.
+                DownloadModePill(readiness.downloadMode, device)
                 // Where the KernelSU manager keeps its own power menu, and for the same reason: a way out
                 // of the running Android is not a setting, it is the thing you reach for while looking at
                 // the phone. What this device can actually do is decided inside.
@@ -3028,6 +3060,216 @@ private fun ReadinessCard(
 }
 
 /**
+ * Whether Samsung's Download Mode (Odin) is reachable right now, as a small dot-and-label pill beside
+ * the header's power button - the same corner DirtyFrag's own Odin pill occupies, and read every time
+ * rather than buried in a card the home screen scrolls past: the escape hatch a recovery from anything
+ * privileged this app does depends on is worth seeing without scrolling for it.
+ *
+ * Green for [DownloadModeStatus.Reachable], the error colour for [DownloadModeStatus.Blocked], and the
+ * row's default tint for [DownloadModeStatus.Unverified] - neither green nor red is honest about a
+ * door this boot has not had root to check yet.
+ */
+@Composable
+private fun DownloadModePill(reading: DownloadModeReading, device: DeviceSnapshot) {
+    val view = LocalView.current
+    val density = LocalDensity.current
+    var showPopup by remember { mutableStateOf(false) }
+    var pillTop by remember { mutableStateOf(32.dp) }
+    val dotColor = when (reading.status) {
+        DownloadModeStatus.Reachable -> MaterialTheme.colorScheme.primary
+        DownloadModeStatus.Blocked -> MaterialTheme.colorScheme.error
+        DownloadModeStatus.Unverified -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    // DirtyFrag's own bg_odin_pill.xml (read from that APK this session): a ripple over a fully
+    // rounded #ff1c1c1c shape - a fixed dark chip rather than a theme-tinted surface, so the pill
+    // reads the same in every accent colour the app offers.
+    Surface(
+        modifier = Modifier.onGloballyPositioned { coordinates ->
+            pillTop = with(density) { coordinates.positionInWindow().y.toDp() }
+        },
+        shape = MaterialTheme.shapes.extraLarge,
+        color = Color(0xFF1C1C1C),
+        onClick = {
+            clickHaptic(view)
+            showPopup = true
+        },
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(dotColor, CircleShape),
+            )
+            Text(
+                stringResource(R.string.download_mode_pill_label),
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.White,
+            )
+        }
+    }
+    if (showPopup) {
+        DownloadModeOdinPopup(
+            reading = reading,
+            device = device,
+            topOffset = pillTop + 32.dp,
+            onDismiss = { showPopup = false },
+        )
+    }
+}
+
+/**
+ * The exact behaviour DirtyFrag's own showOdinPopup() has, read from that APK this session: an
+ * anchored, non-modal popup pinned to the pill's corner - not a centered dialog - three plain rows
+ * (Lockscreen, Maintenance Mode, Device) and nothing else, a dark #ff1c1c1c card, a scale-and-fade
+ * entrance from that corner, and a dim scrim behind it. [SideChoiceMenu] already has this exact
+ * shape in this codebase for a different anchored menu; this follows the same pattern rather than
+ * inventing a second one, with DirtyFrag's own timing/shape numbers in place of that menu's.
+ */
+@Composable
+private fun DownloadModeOdinPopup(
+    reading: DownloadModeReading,
+    device: DeviceSnapshot,
+    topOffset: Dp,
+    onDismiss: () -> Unit,
+) {
+    var visible by remember { mutableStateOf(false) }
+    var closing by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val scrimAlpha by animateFloatAsState(
+        targetValue = if (visible) 0.5f else 0f,
+        animationSpec = tween(durationMillis = if (visible) 150 else 150),
+        label = "odin-scrim",
+    )
+
+    fun close() {
+        if (closing) return
+        closing = true
+        visible = false
+        coroutineScope.launch {
+            delay(150L)
+            onDismiss()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        visible = true
+    }
+
+    Popup(
+        onDismissRequest = ::close,
+        properties = PopupProperties(
+            focusable = true,
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            clippingEnabled = false,
+        ),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = scrimAlpha))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = ::close,
+                    ),
+            )
+            AnimatedVisibility(
+                visible = visible,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = topOffset, end = 18.dp),
+                enter = scaleIn(
+                    animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
+                    initialScale = 0.875f,
+                    transformOrigin = TransformOrigin(1f, 0f),
+                ) + fadeIn(animationSpec = tween(durationMillis = 150)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 150)),
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .widthIn(min = 230.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {},
+                        ),
+                    shape = RoundedCornerShape(26.dp),
+                    color = Color(0xFF1C1C1C),
+                    contentColor = Color.White,
+                    shadowElevation = 12.dp,
+                ) {
+                    Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                        DownloadModeOdinRow(
+                            stringResource(R.string.download_mode_row_lockscreen),
+                            stringResource(
+                                if (reading.lockscreenSecured) {
+                                    R.string.download_mode_value_secured
+                                } else {
+                                    R.string.download_mode_value_not_secured
+                                },
+                            ),
+                        )
+                        DownloadModeOdinSeparator()
+                        DownloadModeOdinRow(
+                            stringResource(R.string.download_mode_row_maintenance),
+                            stringResource(
+                                when (reading.maintenanceModeActive) {
+                                    true -> R.string.download_mode_value_active
+                                    false -> R.string.download_mode_value_not_active
+                                    null -> R.string.download_mode_value_unknown
+                                },
+                            ),
+                        )
+                        DownloadModeOdinSeparator()
+                        DownloadModeOdinRow(
+                            stringResource(R.string.download_mode_row_device),
+                            device.model,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** One label/value line in the Odin popup, matching DirtyFrag's own odinRow() layout. */
+@Composable
+private fun DownloadModeOdinRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = Color.White)
+        Text(
+            value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White.copy(alpha = 0.7f),
+        )
+    }
+}
+
+/** The thin divider DirtyFrag's own odinSep() draws between rows. */
+@Composable
+private fun DownloadModeOdinSeparator() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(1.dp)
+            .background(Color.White.copy(alpha = 0.12f)),
+    )
+}
+
+/**
  * Whether a manager app is on the phone, which is not the same question as whether root is loaded.
  *
  * Both are worth a line because the states they describe need different things done about them: root
@@ -3444,6 +3686,7 @@ private fun InfoRow(
     label: String,
     value: String,
     onClick: (() -> Unit)? = null,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
     Row(
         modifier = if (onClick != null) {
@@ -3456,7 +3699,7 @@ private fun InfoRow(
         },
         horizontalArrangement = Arrangement.spacedBy(13.dp),
     ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Icon(icon, contentDescription = null, tint = iconTint)
         Column {
             Text(label, style = MaterialTheme.typography.titleSmall)
             Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -4713,6 +4956,7 @@ private fun SettingsPage(
     device: DeviceSnapshot,
     accentColor: AccentColor,
     themeMode: AppThemeMode,
+    oledBlack: Boolean,
 	disableKsuModules: Boolean,
     loadKernelSu: Boolean,
     kernelsuFlavor: KernelSuFlavor,
@@ -4744,6 +4988,7 @@ private fun SettingsPage(
     resumeTick: Int,
     onAccentColorChanged: (AccentColor) -> Unit,
     onThemeModeChanged: (AppThemeMode) -> Unit,
+    onOledBlackChanged: (Boolean) -> Unit,
 	onDisableKsuModulesChanged: (Boolean) -> Unit,
     onLoadKernelSuChanged: (Boolean) -> Unit,
     onRerootAtBootChanged: (Boolean) -> Unit,
@@ -5368,6 +5613,30 @@ private fun SettingsPage(
         if (SettingsSection.Appearance in openSections) item {
             SettingsSectionBody {
                 ThemeModeSelector(themeMode, onThemeModeChanged)
+            }
+        }
+        if (SettingsSection.Appearance in openSections) item {
+            SettingsSectionBody {
+                SettingsSwitchCard(
+                    // Only reads as a theme once dark mode is actually showing - light mode has no
+                    // black to flatten to, which is what the description says rather than leaving
+                    // the toggle sitting there with no visible effect and no explanation why.
+                    icon = Icons.Rounded.DarkMode,
+                    title = stringResource(R.string.oled_black),
+                    description = stringResource(
+                        if (themeMode == AppThemeMode.Light) {
+                            R.string.oled_black_needs_dark
+                        } else {
+                            R.string.oled_black_description
+                        },
+                    ),
+                    checked = oledBlack,
+                    position = SettingsCardPosition.Single,
+                    onCheckedChange = {
+                        clickHaptic(view)
+                        onOledBlackChanged(it)
+                    },
+                )
             }
         }
         if (SettingsSection.Appearance in openSections) item {
