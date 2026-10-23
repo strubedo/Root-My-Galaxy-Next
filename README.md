@@ -19,6 +19,28 @@ grant of its own.
 
 [Latest release](https://github.com/rushiranpise/Root-My-Galaxy-Next/releases)
 
+## This fork (strubedo)
+
+This repository is [strubedo](https://github.com/strubedo)'s fork of the above project, built and
+tested against a real Galaxy S25 Edge (SM-S937U1). On top of upstream it adds:
+
+- **KernelSU-Next as the default flavour**, instead of plain KernelSU - this project's whole
+  toolchain targets KernelSU-Next, so the app now does too out of the box.
+- **A true-black (OLED) theme option** (Settings > Appearance) that flattens dark mode's Material
+  surfaces to literal black while leaving accent colors untouched.
+- **A Download Mode (Odin) status pill**, styled after the original DirtyFrag app's own (traced
+  directly from its APK: anchored popup, matching colors/corner radius/animation, not a generic
+  Material dialog). Checks three independent paths to Download Mode on Samsung devices - lockscreen
+  security state, Maintenance Mode, and whether the BackDownload root module is active - and shows
+  which one is actually open, not just a single red/green verdict.
+- A real bug fix in the Maintenance Mode check: it used to read as "unknown" on every phone that
+  wasn't currently in Maintenance Mode, because the underlying Android setting is simply absent
+  rather than present-and-0 when off, and the original read had no default value for that case.
+
+<img width="200" alt="Home screen: the Odin pill in the header, true-black OLED theme, KernelSU-Next labelling" src="docs/screenshots/home-odin-pill-oled.jpg" /> <img width="200" alt="Settings: the true-black (OLED) toggle" src="docs/screenshots/settings-oled-toggle.jpg" />
+
+Everything below this point is upstream's own documentation.
+
 The device feed and native payloads used here are maintained in
 [Root-My-Galaxy-Payloads](https://github.com/rushiranpise/Root-My-Galaxy-Payloads), a fork of
 [the original catalog](https://github.com/BuSung-dev/Root-My-Galaxy-Payloads).
